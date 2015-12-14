@@ -1,0 +1,10 @@
+{
+  "manifest_version": 2,
+  "name": "Net",
+  "version": "1.0",
+  "description": "Net Usage",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  }
+}
