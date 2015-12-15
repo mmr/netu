@@ -13,7 +13,12 @@ function parseIpList(body) {
   var el = document.createElement('span');
   el.innerHTML = body;
   var data = el.children[0].text;
-
+  var items = data.replace(/(?:^[^"]+)|(?:, 0,0 \);$)|["\s]/g, '').split(/,/);
+  var ips = {};
+  for (var i = 0; i < items.length; i += 4) {
+    ips[items[i + 2]] = items[i];
+  }
+  return ips;
 }
 
 function refresh() {
