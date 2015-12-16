@@ -1,9 +1,17 @@
+// TODO (mmr) : this should be given by the user from a form
 var user = 'user';
 var pass = 'pass';
+var routerIp = '192.168.1.1';
+var maxBwInMbps = 10;
+
+// Constants
+var bitsInOneMbit = 1000000;
+var bitsInOneByte = 8;
+var maxBwInBps = (maxBwInMbps * bitsInOneMbit / bitsInOneByte);
 var hash = btoa(user + ':' + pass);
-var baseUrl = 'http://192.168.1.1/userRpm/';
+var baseUrl = 'http://' + routerIp + '/userRpm/';
 var namesUrl = baseUrl + 'AssignedIpAddrListRpm.htm';
-var statsUrl = baseUrl + 'SystemStatisticRpm.htm';
+var statsUrl = baseUrl + 'SystemStatisticRpm.htm?Num_per_page=100';
 var conf = {
   'headers': new Headers({
     'Authorization': 'Basic ' + hash
@@ -27,8 +35,8 @@ function parseIpList(body) {
 }
 
 function parseStats(body) {
-  var data = getText(body, 0);
-  var re = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
+  var data = xx_data = getText(body, 0);
+  var re = xx_re = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
   var stats = {};
   var m = null;
   while ((m = re.exec(data)) !== null) {
@@ -41,28 +49,26 @@ function refresh() {
   var n = document.getElementById('main');
 
   fetch(statsUrl, conf).then(function(resp) {
-    console.log(1);
     return resp.text();
   }).then(function(body) {
-    console.log(2);
     var stats = parseStats(body);
+    var statsIps = Object.keys(stats);
+    statsIps.sort(function(a, b){ return stats[b] - stats[a]; });
+
     fetch(namesUrl, conf).then(function(response) {
-      console.log(3);
       return response.text();
     }).then(function(body) {
-      console.log(4);
       var ips = parseIpList(body);
 
-      var msg = '<table>';
-      for (var ip in ips) {
-        console.log(5, ip);
-        var name = ips[ip];
-        var stat = stats[ip];
-        msg += '<tr><td>' + name  + '</td><td>' + stat + '</td></tr>';
-      }
+      var msg = '<table border="1">';
+      statsIps.forEach(function(key) {
+        var name = ips[key];
+        var stat = stats[key];
+        var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
+        msg += '<tr><td>' + name  + '</td><td>' + stat + '</td><td>' + perc + '%</td></tr>';
+      });
       msg += '</table>';
 
-      console.log(6, msg);
       n.innerHTML = msg;
     });
   });
