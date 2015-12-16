@@ -63,7 +63,7 @@ function refresh() {
       var msg = '<table border="1">';
       statsIps.forEach(function(key) {
         var name = ips[key];
-        var stat = stats[key];
+        var stat = stats[key] / 2;
         var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
         msg += '<tr><td>' + name  + '</td><td>' + stat + '</td><td>' + perc + '%</td></tr>';
       });
