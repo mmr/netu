@@ -35,8 +35,8 @@ function parseIpList(body) {
 }
 
 function parseStats(body) {
-  var data = xx_data = getText(body, 0);
-  var re = xx_re = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
+  var data = getText(body, 0);
+  var re = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
   var stats = {};
   var m = null;
   while ((m = re.exec(data)) !== null) {
