@@ -13,7 +13,6 @@ nice pie chart.
 
 ### Technologies used:
 - [NPM](https://www.npmjs.com/)
-- [React](https://facebook.github.io/react/)
 - [D3](http://d3js.org/)
 
 ### Supported routers:
