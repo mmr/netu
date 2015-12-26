@@ -1,12 +1,17 @@
 // Constants
 var bitsInOneMbit = 1000000;
 var bitsInOneByte = 8;
+var w = 400;
+var h = 400;
+var r = h/2;
+var color = d3.scale.category20c();
 
 // TODO (mmr) : globals... yeah
 var host = null;
 var user = null;
 var pass = null;
 var maxBw = null;
+var main = null;
 
 function getText(body, index) {
   var el = document.createElement('span');
@@ -42,10 +47,14 @@ function createButtons() {
   return span;
 }
 
-function handleErr(err, main) {
+function handleErr(err) {
     var data = '<p>Something bad happened: ' + err + '<p/>';
     main.innerHTML = data;
     main.appendChild(buttons);
+}
+
+function clear() {
+  main.innerHTML = '';
 }
 
 function refresh() {
@@ -60,11 +69,10 @@ function refresh() {
     })
   };
 
-  var main = document.getElementById('main');
   fetch(statsUrl, conf).then(function(resp) {
     return resp.text();
   }).catch(function(err) {
-    handleErr(err, main);
+    handleErr(err);
   }).then(function(body) {
     var stats = parseStats(body);
     var statsIps = Object.keys(stats);
@@ -75,18 +83,52 @@ function refresh() {
     }).then(function(body) {
       var ips = parseIpList(body);
 
-      var data = '<table border="1">';
+      var data = [];
+      var unusedPerc = 100;
       statsIps.forEach(function(key) {
         var name = ips[key];
         var stat = stats[key] / 2;
         var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
-        data += '<tr><td>' + name  + '</td><td>' + stat + '</td><td>' + perc + '%</td></tr>';
+        if (perc > 1) {
+          data.push({label: name, value: perc});
+          unusedPerc -= perc;
+        }
       });
-      data += '</table>';
-      main.innerHTML = data;
+      data.push({label: '', value: unusedPerc});
+
+      clear();
+      var mainId = '#' + main.id;
+      var vis = d3.select(mainId).append('svg:svg').data([data])
+        .attr('width', w)
+        .attr('height', h)
+        .append('svg:g')
+        .attr('transform', 'translate('+ r + ',' + r + ')');
+
+      var pie = d3.layout.pie().value(function(d){ return d.value; } );
+      var arc = d3.svg.arc().outerRadius(r);
+      var arcs = vis.selectAll('g.slice')
+        .data(pie).enter().append('svg:g').attr('class', 'slice');
+
+      arcs.append('svg:path')
+        .attr('fill', function(d, i) {
+          return color(i);
+        })
+        .attr('d', function(d) {
+          return arc(d);
+        });
+
+      arcs.append('svg:text')
+        .attr('transform',function(d) {
+          d.innerRadius = 0;
+          d.outerRadius = r;
+          return 'translate(' + arc.centroid(d) + ')';
+        })
+        .attr('text-anchor', 'middle').text(function(d, i) {
+          return data[i].label + ' ' + data[i].value + '%';
+        });
       main.appendChild(createButtons());
     }).catch(function(err) {
-      handleErr(err, main);
+      handleErr(err);
     });
   });
 }
@@ -152,8 +194,7 @@ function createSettingsForm() {
 }
 
 function showSettingsForm() {
-  var main = document.getElementById('main');
-  main.innerHTML = '';
+  clear();
   main.appendChild(createSettingsForm());
 }
 
@@ -174,6 +215,7 @@ function setUp() {
 }
 
 function onReady() {
+  main = document.getElementById('main');
   setUp();
 }
 
