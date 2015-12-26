@@ -60,7 +60,6 @@ function refresh() {
     })
   };
 
-  var buttons = createButtons();
   var main = document.getElementById('main');
   fetch(statsUrl, conf).then(function(resp) {
     return resp.text();
@@ -85,7 +84,7 @@ function refresh() {
       });
       data += '</table>';
       main.innerHTML = data;
-      main.appendChild(buttons);
+      main.appendChild(createButtons());
     }).catch(function(err) {
       handleErr(err, main);
     });
