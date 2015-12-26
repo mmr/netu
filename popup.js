@@ -169,8 +169,7 @@ function setUp() {
     if (host && user && pass && maxBw) {
       refresh();
     } else {
-      var main = document.getElementById('main');
-      main.innerHTML = createSettingsForm().innerHTML;
+      showSettingsForm();
     }
   });
 }
