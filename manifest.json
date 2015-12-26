@@ -7,6 +7,12 @@
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
+  "content_scripts": [{
+    "matches": ["http://mbostock.github.io/*"],
+    "js": [
+      "node_modules/d3/d3.min.js"
+    ]
+  }],
   "permissions": [
     "http://*/",
     "storage"
