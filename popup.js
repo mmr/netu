@@ -48,17 +48,68 @@ function createButtons() {
 }
 
 function handleErr(err) {
-    var data = '<p>Something bad happened: ' + err + '<p/>';
-    main.innerHTML = data;
-    main.appendChild(buttons);
+  var data = '<p>Something bad happened: ' + err + '<p/>';
+  main.innerHTML = data;
+  main.appendChild(createButtons());
 }
 
 function clear() {
   main.innerHTML = '';
 }
 
-function refresh() {
+function drawPie(data) {
+  var mainId = '#' + main.id;
+  var vis = d3.select(mainId).append('svg:svg').data([data])
+    .attr('width', w)
+    .attr('height', h)
+    .append('svg:g')
+    .attr('transform', 'translate('+ r + ',' + r + ')');
+
+  var pie = d3.layout.pie().value(function(d){ return d.value; } );
+  var arc = d3.svg.arc().outerRadius(r);
+  var arcs = vis.selectAll('g.slice')
+    .data(pie).enter().append('svg:g').attr('class', 'slice');
+
+  arcs.append('svg:path')
+    .attr('fill', function(d, i) {
+      return color(i);
+    })
+    .attr('d', function(d) {
+      return arc(d);
+    });
+
+  arcs.append('svg:text')
+    .attr('transform',function(d) {
+      d.innerRadius = 0;
+      d.outerRadius = r;
+      return 'translate(' + arc.centroid(d) + ')';
+    })
+    .attr('text-anchor', 'middle').text(function(d, i) {
+      return data[i].label + ' ' + data[i].value + '%';
+    });
+}
+
+function getData(stats, body) {
   var maxBwInBps = (maxBw * bitsInOneMbit / bitsInOneByte);
+  var unusedPerc = 100;
+  var ips = parseIpList(body);
+  var statsIps = Object.keys(stats);
+  var data = [];
+  //statsIps.sort(function(a, b){ return stats[b] - stats[a]; });
+  statsIps.forEach(function(key) {
+    var name = ips[key];
+    var stat = stats[key] / 2;
+    var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
+    if (perc > 1) {
+      data.push({label: name, value: perc});
+      unusedPerc -= perc;
+    }
+  });
+  data.push({label: '', value: unusedPerc});
+  return data;
+}
+
+function refresh() {
   var hash = btoa(user + ':' + pass);
   var baseUrl = 'http://' + host + '/userRpm/';
   var namesUrl = baseUrl + 'AssignedIpAddrListRpm.htm';
@@ -75,57 +126,13 @@ function refresh() {
     handleErr(err);
   }).then(function(body) {
     var stats = parseStats(body);
-    var statsIps = Object.keys(stats);
-    statsIps.sort(function(a, b){ return stats[b] - stats[a]; });
 
-    fetch(namesUrl, conf).then(function(response) {
-      return response.text();
+    fetch(namesUrl, conf).then(function(resp) {
+      return resp.text();
     }).then(function(body) {
-      var ips = parseIpList(body);
-
-      var data = [];
-      var unusedPerc = 100;
-      statsIps.forEach(function(key) {
-        var name = ips[key];
-        var stat = stats[key] / 2;
-        var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
-        if (perc > 1) {
-          data.push({label: name, value: perc});
-          unusedPerc -= perc;
-        }
-      });
-      data.push({label: '', value: unusedPerc});
-
+      var data = getData(stats, body);
       clear();
-      var mainId = '#' + main.id;
-      var vis = d3.select(mainId).append('svg:svg').data([data])
-        .attr('width', w)
-        .attr('height', h)
-        .append('svg:g')
-        .attr('transform', 'translate('+ r + ',' + r + ')');
-
-      var pie = d3.layout.pie().value(function(d){ return d.value; } );
-      var arc = d3.svg.arc().outerRadius(r);
-      var arcs = vis.selectAll('g.slice')
-        .data(pie).enter().append('svg:g').attr('class', 'slice');
-
-      arcs.append('svg:path')
-        .attr('fill', function(d, i) {
-          return color(i);
-        })
-        .attr('d', function(d) {
-          return arc(d);
-        });
-
-      arcs.append('svg:text')
-        .attr('transform',function(d) {
-          d.innerRadius = 0;
-          d.outerRadius = r;
-          return 'translate(' + arc.centroid(d) + ')';
-        })
-        .attr('text-anchor', 'middle').text(function(d, i) {
-          return data[i].label + ' ' + data[i].value + '%';
-        });
+      drawPie(data);
       main.appendChild(createButtons());
     }).catch(function(err) {
       handleErr(err);
