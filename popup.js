@@ -1,6 +1,7 @@
 // Constants
 var bitsInOneMbit = 1000000;
 var bitsInOneByte = 8;
+var minPercToShow = 1;
 var w = 400;
 var h = 400;
 var r = h/2;
@@ -99,7 +100,7 @@ function getData(stats, body) {
     var name = ips[key];
     var stat = stats[key] / 2;
     var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
-    if (perc > 1) {
+    if (perc > minPercToShow) {
       data.push({label: name, value: perc});
       unusedPerc -= perc;
     }
