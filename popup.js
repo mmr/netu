@@ -95,7 +95,6 @@ function getData(stats, body) {
   var ips = parseIpList(body);
   var statsIps = Object.keys(stats);
   var data = [];
-  //statsIps.sort(function(a, b){ return stats[b] - stats[a]; });
   statsIps.forEach(function(key) {
     var name = ips[key];
     var stat = stats[key] / 2;
