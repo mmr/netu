@@ -106,7 +106,7 @@ function getData(stats, body) {
     }
   });
   if (unusedPerc > minPercToShow) {
-    kdata.push({label: '', value: unusedPerc});
+    data.push({label: '', value: unusedPerc});
   }
   return data;
 }
