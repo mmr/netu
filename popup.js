@@ -80,7 +80,7 @@ function drawPie(data) {
     });
 
   arcs.append('svg:text')
-    .attr('transform',function(d) {
+    .attr('transform', function(d) {
       d.innerRadius = 0;
       d.outerRadius = r;
       return 'translate(' + arc.centroid(d) + ')';
