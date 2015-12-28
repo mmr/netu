@@ -162,14 +162,13 @@ function saveSettings() {
   pass = getInputValue('pass');
   maxBw = getInputValue('maxBw');
   chrome.storage.sync.set({
-      'host': host,
-      'user': user,
-      'pass': pass,
-      'maxBw': maxBw
-    }, function() {
-      refresh();
-    }
-  );
+    'host': host,
+    'user': user,
+    'pass': pass,
+    'maxBw': maxBw
+  }, function() {
+    refresh();
+  });
 }
 
 function createButton(name, action) {
