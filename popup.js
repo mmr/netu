@@ -105,7 +105,9 @@ function getData(stats, body) {
       unusedPerc -= perc;
     }
   });
-  data.push({label: '', value: unusedPerc});
+  if (unusedPerc > minPercToShow) {
+    kdata.push({label: '', value: unusedPerc});
+  }
   return data;
 }
 
