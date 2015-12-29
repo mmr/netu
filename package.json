@@ -4,7 +4,8 @@
   "description": "Net Usage",
   "main": "popup.js",
   "dependencies": {
-    "d3": "^3.5.12"
+    "d3": "^3.5.12",
+    "d3pie": "^0.1.9"
   },
   "repository": {
     "type": "git",
