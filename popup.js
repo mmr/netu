@@ -6,6 +6,7 @@ var w = 400;
 var h = 400;
 var r = h/2;
 var color = d3.scale.category20c();
+var mainId = 'main';
 
 // TODO (mmr) : globals... yeah
 var host = null;
@@ -59,59 +60,67 @@ function clear() {
 }
 
 function drawPie(data) {
-  var mainId = '#' + main.id;
-  var vis = d3.select(mainId).append('svg:svg').data([data])
-    .attr('width', w)
-    .attr('height', h)
-    .append('svg:g')
-    .attr('transform', 'translate('+ r + ',' + r + ')');
-
-  var pie = d3.layout.pie().value(function(d){ return d.value; } );
-  var arc = d3.svg.arc().outerRadius(r);
-  var arcs = vis.selectAll('g.slice')
-    .data(pie).enter().append('svg:g').attr('class', 'slice');
-
-  arcs.append('svg:path')
-    .attr('fill', function(d, i) {
-      return color(i);
-    })
-    .attr('d', function(d) {
-      return arc(d);
-    });
-
-  arcs.append('svg:text')
-    .attr('transform', function(d) {
-      d.innerRadius = 0;
-      d.outerRadius = r;
-      return 'translate(' + arc.centroid(d) + ')';
-    })
-    .attr('text-anchor', 'middle').text(function(d, i) {
-      return data[i].label + ' ' + data[i].value + '%';
-    });
-}
-
-function round(n) {
-    return (Math.round((n + 0.00001) * 100) / 100).toFixed(2);
+  var pie = new d3pie(mainId, {
+    'header': {
+      'title': {
+        'text': 'Net Usage',
+        'fontSize': 22,
+        'font': 'exo'
+      },
+    },
+    'size': {
+      'canvasHeight': 400,
+      'canvasWidth': 590,
+      'pieOuterRadius': '88%'
+    },
+    'labels': {
+      'outer': {
+        'format': 'label-value2',
+        'pieDistance': 32
+      },
+      'mainLabel': {
+        'font': 'exo'
+      },
+      'percentage': {
+        'color': '#e1e1e1',
+        'font': 'exo',
+        'decimalPlaces': 0
+      },
+      'value': {
+        'color': '#e1e1e1',
+        'font': 'exo'
+      },
+      'lines': {
+        'enabled': true
+      },
+      'truncation': {
+        'enabled': true
+      }
+    },
+    'data': {
+      'sortOrder': 'value-desc',
+      'smallSegmentGrouping': {
+        'enabled': true,
+        'value': minPercToShow
+      },
+      'content': data
+    }
+  });
 }
 
 function getData(stats, body) {
   var maxBwInBps = (maxBw * bitsInOneMbit / bitsInOneByte);
-  var unusedPerc = 100;
+  var unusedBw = maxBwInBps;
   var ips = parseIpList(body);
   var statsIps = Object.keys(stats);
   var data = [];
   statsIps.forEach(function(key) {
-    var name = ips[key];
+    var label = ips[key];
     var stat = stats[key] / 2;
-    var perc = stat * 100 / maxBwInBps;
-    if (perc > minPercToShow) {
-      data.push({label: name, value: round(perc)});
-      unusedPerc -= perc;
-    }
+    data.push({label: label, value: stat});
+    unusedBw -= stat;
   });
-  if (unusedPerc > minPercToShow) {
-    data.push({label: '', value: round(unusedPerc)});
-  }
+  data.push({label: 'free', value: unusedBw});
   return data;
 }
 
@@ -227,7 +236,7 @@ function setUp() {
 }
 
 function onReady() {
-  main = document.getElementById('main');
+  main = document.getElementById(mainId);
   setUp();
 }
 
