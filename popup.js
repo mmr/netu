@@ -75,7 +75,7 @@ function drawPie(data) {
     },
     'labels': {
       'outer': {
-        'format': 'label-value2',
+        'format': 'label',
         'pieDistance': 32
       },
       'mainLabel': {
