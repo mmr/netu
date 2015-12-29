@@ -60,7 +60,7 @@ function clear() {
 }
 
 function drawPie(data) {
-  var pie = new d3pie(mainId, {
+  new d3pie(mainId, {
     'header': {
       'title': {
         'text': 'Net Usage',
