@@ -97,6 +97,19 @@ function drawPie(data) {
         'enabled': true
       }
     },
+    'effects': {
+      'pullOutSegmentOnClick': {
+        'effect': 'linear',
+        'speed': 400,
+        'size': 8
+      }
+    },
+    'misc': {
+      'gradient': {
+        'enabled': true,
+        'percentage': 100
+      }
+    },
     'data': {
       'sortOrder': 'value-desc',
       'smallSegmentGrouping': {
