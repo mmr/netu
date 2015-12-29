@@ -90,6 +90,10 @@ function drawPie(data) {
     });
 }
 
+function round(n) {
+    return (Math.round((n + 0.00001) * 100) / 100).toFixed(2);
+}
+
 function getData(stats, body) {
   var maxBwInBps = (maxBw * bitsInOneMbit / bitsInOneByte);
   var unusedPerc = 100;
@@ -99,14 +103,14 @@ function getData(stats, body) {
   statsIps.forEach(function(key) {
     var name = ips[key];
     var stat = stats[key] / 2;
-    var perc = Math.round((stat * 100 / maxBwInBps) * 100) / 100;
+    var perc = stat * 100 / maxBwInBps;
     if (perc > minPercToShow) {
-      data.push({label: name, value: perc});
+      data.push({label: name, value: round(perc)});
       unusedPerc -= perc;
     }
   });
   if (unusedPerc > minPercToShow) {
-    data.push({label: '', value: unusedPerc});
+    data.push({label: '', value: round(unusedPerc)});
   }
   return data;
 }
