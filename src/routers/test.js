@@ -6,15 +6,19 @@
 // If host or user contains the word 'fail' the
 // failure callback is called
 
-var DEFAULT_MAX_HOSTS = 10;
-var DEFAULT_MAX_BW_IN_BPS = 100000000;
-
 var HOSTS = [
-  'jaspion',
-  'Úñíçôdè Têst',
-  '"[<(hue)>]"',
-  'really-long-name-that-could-break-our-layout',
+  'Prefect',
+  'Kitty\'s iPhone',
+  'Ganymede',
+  'Kalliope',
+  'Nosferatu',
+  'Chromecast',
+  'Cthulhu',
+  'Rincewind',
 ];
+
+var DEFAULT_MAX_HOSTS = HOSTS.length;
+var DEFAULT_MAX_BW_IN_BPS = 100000000;
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -39,8 +43,8 @@ function getStats(host, user, pass, successCb, failureCb) {
   var freeBw = maxBw;
   var stats = {};
   for (var i = 0; i < maxHosts && freeBw > 0; i++) {
-    var name = HOSTS[rand(0, HOSTS.length - 1)] + i;
-    var stat = rand(1, freeBw);
+    var name = HOSTS[i];
+    var stat = rand(1, freeBw / 3);
     stats[name] = stat;
     freeBw -= stat;
   }
