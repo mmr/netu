@@ -1,3 +1,4 @@
+/* TP-LINK WR941ND router stats fetcher script */
 /*
 function getText(body, index) {
   var el = document.createElement('span');
