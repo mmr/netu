@@ -1,3 +1,7 @@
+// Linting
+/* global importScripts */
+/* global getStats */
+
 self.addEventListener('message', function (e) {
 
   function onSuccess(stats) {
