@@ -118,7 +118,7 @@ function getChartData(ips, stats) {
 
 function refresh() {
   var routerScript = routers[router];
-  worker.postMessage({
+  routersWorker.postMessage({
     'routerScript': routerScript,
     'host': host,
     'user': user,
@@ -182,7 +182,7 @@ function createSelect(name, defaultValue, placeholder) {
   input += ">";
   input += "<option value='' disabled>" + placeholder +  "</option>";
 
-  routers.forEach(function(routerName) {
+  Object.keys(routers).forEach(function(routerName) {
     input += "<option value='" + routerName + "'";
     if (routerName === defaultValue) {
       input += " selected";
