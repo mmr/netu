@@ -1,3 +1,8 @@
+// Add router scripts here
+var routers = {
+  'TP-LINK TL-WR941ND': 'tl-wr941nd.js',
+}
+
 // Constants
 var bitsInOneMbit = 1000000;
 var bitsInOneByte = 8;
@@ -9,38 +14,13 @@ var color = d3.scale.category20c();
 var mainId = 'main';
 
 // TODO (mmr) : globals... yeah
+var router = null;
 var host = null;
 var user = null;
 var pass = null;
 var maxBw = null;
 var main = null;
-
-function getText(body, index) {
-  var el = document.createElement('span');
-  el.innerHTML = body;
-  return el.children[index].text;
-}
-
-function parseIpList(body) {
-  var data = getText(body, 0);
-  var items = data.replace(/(?:^[^"]+)|(?:, 0,0 \);$)|["\s]/g, '').split(/,/);
-  var ips = {};
-  for (var i = 0; i < items.length; i += 4) {
-    ips[items[i + 2]] = items[i];
-  }
-  return ips;
-}
-
-function parseStats(body) {
-  var data = getText(body, 0);
-  var re = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
-  var stats = {};
-  var m = null;
-  while ((m = re.exec(data)) !== null) {
-    stats[m[1]] = m[2];
-  }
-  return stats;
-}
+var routersWorker = null;
 
 function createButtons() {
   var span = document.createElement('span');
@@ -121,15 +101,12 @@ function drawPie(data) {
   });
 }
 
-function getData(stats, body) {
+function getChartData(stats) {
   var maxBwInBps = (maxBw * bitsInOneMbit / bitsInOneByte);
   var unusedBw = maxBwInBps;
-  var ips = parseIpList(body);
-  var statsIps = Object.keys(stats);
   var data = [];
-  statsIps.forEach(function(key) {
-    var label = ips[key];
-    var stat = stats[key] / 2;
+  Object.keys(stats).forEach(function(label) {
+    var stat = stats[label];
     data.push({label: label, value: stat});
     unusedBw -= stat;
   });
@@ -138,33 +115,12 @@ function getData(stats, body) {
 }
 
 function refresh() {
-  var hash = btoa(user + ':' + pass);
-  var baseUrl = 'http://' + host + '/userRpm/';
-  var namesUrl = baseUrl + 'AssignedIpAddrListRpm.htm';
-  var statsUrl = baseUrl + 'SystemStatisticRpm.htm?Num_per_page=100';
-  var conf = {
-    'headers': new Headers({
-      'Authorization': 'Basic ' + hash
-    })
-  };
-
-  fetch(statsUrl, conf).then(function(resp) {
-    return resp.text();
-  }).catch(function(err) {
-    handleErr(err);
-  }).then(function(body) {
-    var stats = parseStats(body);
-
-    fetch(namesUrl, conf).then(function(resp) {
-      return resp.text();
-    }).then(function(body) {
-      var data = getData(stats, body);
-      clear();
-      drawPie(data);
-      main.appendChild(createButtons());
-    }).catch(function(err) {
-      handleErr(err);
-    });
+  var routerScript = routers[router];
+  routersWorker.postMessage({
+    'routerScript': routerScript,
+    'host': host,
+    'user': user,
+    'pass': pass,
   });
 }
 
@@ -185,12 +141,20 @@ function getInputValue(name) {
   return document.getElementById(name).value;
 }
 
+function getSelectValue(name) {
+  var sel = document.getElementById(name);
+  return sel.options[sel.selectedIndex].value;
+}
+
 function saveSettings() {
+  // TODO (mmr) : sanity check/validate user input
+  router = getSelectValue('router');
   host = getInputValue('host');
   user = getInputValue('user');
   pass = getInputValue('pass');
   maxBw = getInputValue('maxBw');
   chrome.storage.sync.set({
+    'router': router,
     'host': host,
     'user': user,
     'pass': pass,
@@ -208,7 +172,29 @@ function createButton(name, action) {
   return button;
 }
 
+function createSelect(name, defaultValue, placeholder) {
+  var span = document.createElement('span');
+  input = " <select";
+  input += " id='" + name + "'";
+  input += " name='" + name + "'";
+  input += ">";
+  input += "<option value='' disabled>" + placeholder +  "</option>";
+
+  Object.keys(routers).forEach(function(routerName) {
+    input += "<option value='" + routerName + "'";
+    if (routerName === defaultValue) {
+      input += " selected";
+    }
+    input += ">" + routerName + "</option>";
+  });
+  input += "</select>";
+
+  span.innerHTML = input;
+  return span;
+}
+
 function createSettingsForm() {
+  var routerSelect = createSelect('router',  router, 'Router');
   var hostInput = createInput('host', 'text', host, 'Host');
   var userInput = createInput('user', 'text', user, 'User');
   var passInput = createInput('pass', 'password', pass, 'Password');
@@ -219,6 +205,7 @@ function createSettingsForm() {
   var legend = document.createElement('legend');
   legend.innerText = 'Settings';
   fieldSet.appendChild(legend);
+  fieldSet.appendChild(routerSelect);
   fieldSet.appendChild(hostInput);
   fieldSet.appendChild(userInput);
   fieldSet.appendChild(passInput);
@@ -232,15 +219,33 @@ function showSettingsForm() {
   main.appendChild(createSettingsForm());
 }
 
+function setUpRoutersWorker() {
+  routersWorker = new Worker('routers/routers.js');
+  routersWorker.addEventListener('message', function(e) {
+    var data = e.data;
+    clear();
+    if (data.status === 'success') {
+      drawPie(getChartData(data.stats));
+    } else {
+      handleErr(data.err);
+    }
+    main.appendChild(createButtons());
+  }, false);
+}
+
 function setUp() {
+  setUpRoutersWorker();
+
+  // TODO (mmr) : extract fields list
   // If settings is in storage, gets data, if not show settings form
-  chrome.storage.sync.get(['host', 'user', 'pass', 'maxBw'], function (items) {
+  chrome.storage.sync.get(['router', 'host', 'user', 'pass', 'maxBw'], function (items) {
+    router = items['router'];
     host = items['host'];
     user = items['user'];
     pass = items['pass'];
     maxBw = items['maxBw'];
 
-    if (host && user && pass && maxBw) {
+    if (router && host && user && pass && maxBw) {
       refresh();
     } else {
       showSettingsForm();
