@@ -1,5 +1,3 @@
-'use strict'
-
 self.addEventListener('message', function (e) {
 
   function onSuccess(stats) {

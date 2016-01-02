@@ -1,5 +1,3 @@
-'use strict'
-
 /* TP-LINK WR941ND router stats fetcher script */
 var dataRe = /^<SCRIPT[^>]+>([^<]+)<\/SCRIPT>/;
 var ipsRe = /^"([^"]+)", "[^"]+", "([\d.]+)"/gm;
