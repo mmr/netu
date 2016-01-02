@@ -1,33 +1,43 @@
 /* TP-LINK WR941ND router stats fetcher script */
-/*
-function getText(body, index) {
-  var el = document.createElement('span');
-  el.innerHTML = body;
-  return el.children[index].text;
-}
-*/
+
+var dataRe = /^<SCRIPT[^>]+>([^<]+)<\/SCRIPT>/;
+var ipsRe = /^"([^"]+)", "[^"]+", "([\d.]+)"/gm;
+var statsRe = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
 
 function parseIpList(body) {
-  // var data = getText(body, 0);
-  var data = body;
-  var items = data.replace(/(?:^[^"]+)|(?:, 0,0 \);$)|["\s]/g, '').split(/,/);
+  var data = dataRe.exec(body)[1];
   var ips = {};
-  for (var i = 0; i < items.length; i += 4) {
-    ips[items[i + 2]] = items[i];
+  var m = null;
+  while ((m = ipsRe.exec(data)) !== null) {
+    var name = m[1];
+    var ip = m[2];
+    ips[ip] = name;
   }
   return ips;
 }
 
 function parseStats(body) {
-  // var data = getText(body, 0);
-  var data = body;
-  var re = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
+  var data = dataRe.exec(body)[1];
   var stats = {};
   var m = null;
-  while ((m = re.exec(data)) !== null) {
-    stats[m[1]] = m[2];
+  while ((m = statsRe.exec(data)) !== null) {
+    var ip = m[1];
+    var stat = parseInt(m[2]);
+    if (stat > 0) {
+      stats[ip] = stat;
+    }
   }
   return stats;
+}
+
+function translateNames(stats, names) {
+  var translated = {};
+  Object.keys(stats).forEach(function(ip) {
+    var name = names[ip];
+    var stat = parseInt(stats[ip]);
+    translated[name] = stats[ip];
+  });
+  return translated;
 }
 
 function handleErr(err) {
@@ -47,18 +57,22 @@ function getStats(host, user, pass, successCb, failureCb) {
     })
   };
 
-  fetch(statsUrl, conf).then(function(resp) {
+  // Fetch ip:name map
+  fetch(namesUrl, conf).then(function(resp) {
     return resp.text();
   }).catch(function(err) {
     failureCb(err);
-  }).then(function(body) {
-    var stats = parseStats(body);
+  }).then(function(ipsBody) {
+    var names = parseIpList(ipsBody);
 
-    fetch(namesUrl, conf).then(function(resp) {
+    // Fetch stats for each ip
+    fetch(statsUrl, conf).then(function(resp) {
       return resp.text();
-    }).then(function(body) {
-      var ips = parseIpList(body);
-      successCb(ips, stats);
+    }).then(function(statsBody) {
+
+      // Translate ip to name and return to success callback
+      var stats = translateNames(parseStats(statsBody), names);
+      successCb(stats);
     }).catch(function(err) {
       failureCb(err);
     });
