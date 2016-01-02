@@ -1,16 +1,18 @@
+// Linting
+/* global chrome */
+/* global d3pie */
+
 // Add router scripts here
+// TODO (mmr) : only add TEST on dev
 var routers = {
   'TP-LINK TL-WR941ND': 'tl-wr941nd.js',
-}
+  'TEST': 'test.js',
+};
 
 // Constants
 var bitsInOneMbit = 1000000;
 var bitsInOneByte = 8;
 var minPercToShow = 1;
-var w = 400;
-var h = 400;
-var r = h/2;
-var color = d3.scale.category20c();
 var mainId = 'main';
 
 // TODO (mmr) : remove globals... yeah
@@ -21,6 +23,24 @@ var pass = null;
 var maxBw = null;
 var main = null;
 var routersWorker = null;
+
+function refresh() {
+  var routerScript = routers[router];
+  routersWorker.postMessage({
+    'routerScript': routerScript,
+    'host': host,
+    'user': user,
+    'pass': pass,
+  });
+}
+
+function createButton(name, action) {
+  var button = document.createElement('button');
+  button.id = name;
+  button.innerText = name;
+  button.addEventListener('click', action);
+  return button;
+}
 
 function createButtons() {
   var span = document.createElement('span');
@@ -114,25 +134,15 @@ function getChartData(stats) {
   return data;
 }
 
-function refresh() {
-  var routerScript = routers[router];
-  routersWorker.postMessage({
-    'routerScript': routerScript,
-    'host': host,
-    'user': user,
-    'pass': pass,
-  });
-}
-
 function createInput(name, type, defaultValue, placeholder) {
   var span = document.createElement('span');
-  var input = " <input";
-  input += " id='" + name + "'";
-  input += " name='" + name + "'";
-  input += " type='" + type + "'";
-  input += " value='" + (defaultValue === undefined ? '' : defaultValue) + "'";
-  input += " placeholder = '" + placeholder + "'";
-  input += " />";
+  var input = ' <input';
+  input += ' id="' + name + '"';
+  input += ' name="' + name + '"';
+  input += ' type="' + type + '"';
+  input += ' value="' + (defaultValue === undefined ? '' : defaultValue) + '"';
+  input += ' placeholder = "' + placeholder + '"';
+  input += ' />';
   span.innerHTML = input;
   return span;
 }
@@ -164,34 +174,26 @@ function saveSettings() {
   });
 }
 
-function createButton(name, action) {
-  var button = document.createElement('button');
-  button.id = name;
-  button.innerText = name;
-  button.addEventListener('click', action);
-  return button;
-}
-
 function createSelect(name, defaultValue, placeholder) {
   var span = document.createElement('span');
-  var input = " <select";
-  input += " id='" + name + "'";
-  input += " name='" + name + "'";
-  input += ">";
-  input += "<option value='' ";
+  var input = ' <select';
+  input += ' id="' + name + '"';
+  input += ' name="' + name + '"';
+  input += '>';
+  input += '<option value="" ';
   if (!defaultValue) {
-    input += " selected='selected'";
+    input += ' selected="selected"';
   }
-  input += "disabled='disabled'>" + placeholder +  "</option>";
+  input += 'disabled="disabled">' + placeholder +  '</option>';
 
   Object.keys(routers).forEach(function(routerName) {
-    input += "<option value='" + routerName + "'";
+    input += '<option value="' + routerName + '"';
     if (routerName === defaultValue) {
-      input += " selected";
+      input += ' selected="selected"';
     }
-    input += ">" + routerName + "</option>";
+    input += '>' + routerName + '</option>';
   });
-  input += "</select>";
+  input += '</select>';
 
   span.innerHTML = input;
   return span;
