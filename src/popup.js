@@ -101,14 +101,12 @@ function drawPie(data) {
   });
 }
 
-function getChartData(ips, stats) {
+function getChartData(stats) {
   var maxBwInBps = (maxBw * bitsInOneMbit / bitsInOneByte);
   var unusedBw = maxBwInBps;
-  var statsIps = Object.keys(stats);
   var data = [];
-  statsIps.forEach(function(key) {
-    var label = ips[key];
-    var stat = stats[key];
+  Object.keys(stats).forEach(function(label) {
+    var stat = stats[label];
     data.push({label: label, value: stat});
     unusedBw -= stat;
   });
@@ -227,8 +225,7 @@ function setUpRoutersWorker() {
     var data = e.data;
     clear();
     if (data.status === 'success') {
-      var chartData = getChartData(data.ips, data.stats);
-      drawPie(chartData);
+      drawPie(getChartData(data.stats));
     } else {
       handleErr(data.err);
     }
