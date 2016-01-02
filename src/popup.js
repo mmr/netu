@@ -52,7 +52,6 @@ function createButtons() {
 function handleErr(err) {
   var data = '<p>Something bad happened: ' + err + '<p/>';
   main.innerHTML = data;
-  main.appendChild(createButtons());
 }
 
 function clear() {
