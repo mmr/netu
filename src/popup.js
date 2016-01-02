@@ -1,3 +1,5 @@
+'use strict'
+
 // Add router scripts here
 var routers = {
   'TP-LINK TL-WR941ND': 'tl-wr941nd.js',
@@ -13,7 +15,7 @@ var r = h/2;
 var color = d3.scale.category20c();
 var mainId = 'main';
 
-// TODO (mmr) : globals... yeah
+// TODO (mmr) : remove globals... yeah
 var router = null;
 var host = null;
 var user = null;
