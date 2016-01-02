@@ -1,9 +1,8 @@
 self.addEventListener('message', function (e) {
 
-  function onSuccess(ips, stats) {
+  function onSuccess(stats) {
     self.postMessage({
       'status': 'success',
-      'ips': ips,
       'stats': stats,
     });
   }
