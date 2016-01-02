@@ -40,13 +40,14 @@ nice pie chart.
 You have to clone this repo and download the dependencies using `npm`.
 
 To do this, in a shell, execute the following commands:
-```
+```bash
 $ git clone https://github.com/mmr/netu
 $ cd $_
 $ npm install
 ```
 
 Now, to install the plugin in Chrome, do this:
+
 1. Go to `chrome://extensions`;
 1. Mark the `Developer mode` checkbox;
 1. Click on `Load unpacked extension`;
