@@ -1,5 +1,3 @@
-'use strict'
-
 // Add router scripts here
 var routers = {
   'TP-LINK TL-WR941ND': 'tl-wr941nd.js',
@@ -128,7 +126,7 @@ function refresh() {
 
 function createInput(name, type, defaultValue, placeholder) {
   var span = document.createElement('span');
-  input = " <input";
+  var input = " <input";
   input += " id='" + name + "'";
   input += " name='" + name + "'";
   input += " type='" + type + "'";
@@ -176,7 +174,7 @@ function createButton(name, action) {
 
 function createSelect(name, defaultValue, placeholder) {
   var span = document.createElement('span');
-  input = " <select";
+  var input = " <select";
   input += " id='" + name + "'";
   input += " name='" + name + "'";
   input += ">";
