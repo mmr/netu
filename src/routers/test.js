@@ -27,6 +27,7 @@ function shouldFail(host, user) {
 function getStats(host, user, pass, successCb, failureCb) {
   if (shouldFail(host, user)) {
     failureCb('Failure');
+    return;
   }
 
   // Host is the number of hosts in test
