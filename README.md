@@ -42,7 +42,7 @@ You have to clone this repo and download the dependencies using `npm`.
 To do this, in a shell, execute the following commands:
 ```bash
 $ git clone https://github.com/mmr/netu
-$ cd $_
+$ cd netu
 $ npm install
 ```
 
