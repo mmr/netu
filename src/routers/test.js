@@ -26,15 +26,15 @@ function shouldFail(host, user) {
 
 function getStats(host, user, pass, successCb, failureCb) {
   if (shouldFail(host, user)) {
-    failureCb({message: 'Fizzles'});
+    failureCb({'message': 'Fizzles'});
     return;
   }
 
   // Host is the number of hosts in test
-  var maxHosts = parseInt(host) || DEFAULT_MAX_HOSTS;
+  var maxHosts = parseInt(host, 10) || DEFAULT_MAX_HOSTS;
 
   // User is the maxBw
-  var maxBw = parseInt(user) || DEFAULT_MAX_BW_IN_BPS;
+  var maxBw = parseInt(user, 10) || DEFAULT_MAX_BW_IN_BPS;
 
   var freeBw = maxBw;
   var stats = {};

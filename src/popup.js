@@ -60,64 +60,64 @@ function clear() {
 }
 
 function drawPie(data) {
-  new d3pie(mainId, {
+  d3pie(mainId, {
     'header': {
       'title': {
         'text': 'Net Usage',
         'fontSize': 22,
-        'font': 'exo'
+        'font': 'exo',
       },
     },
     'size': {
       'canvasHeight': 400,
       'canvasWidth': 590,
-      'pieOuterRadius': '88%'
+      'pieOuterRadius': '88%',
     },
     'labels': {
       'outer': {
         'format': 'label',
-        'pieDistance': 32
+        'pieDistance': 32,
       },
       'mainLabel': {
-        'font': 'exo'
+        'font': 'exo',
       },
       'percentage': {
         'color': '#e1e1e1',
         'font': 'exo',
-        'decimalPlaces': 0
+        'decimalPlaces': 0,
       },
       'value': {
         'color': '#e1e1e1',
-        'font': 'exo'
+        'font': 'exo',
       },
       'lines': {
-        'enabled': true
+        'enabled': true,
       },
       'truncation': {
-        'enabled': true
-      }
+        'enabled': true,
+      },
     },
     'effects': {
       'pullOutSegmentOnClick': {
         'effect': 'linear',
         'speed': 400,
-        'size': 8
-      }
+        'size': 8,
+      },
     },
     'misc': {
       'gradient': {
         'enabled': true,
-        'percentage': 100
-      }
+        'percentage': 100,
+      },
     },
     'data': {
       'sortOrder': 'value-desc',
       'smallSegmentGrouping': {
         'enabled': true,
-        'value': minPercToShow
+        'value': minPercToShow,
       },
-      'content': data
-    }
+      'content': data,
+    },
   });
 }
 
@@ -127,10 +127,10 @@ function getChartData(stats) {
   var data = [];
   Object.keys(stats).forEach(function(label) {
     var stat = stats[label];
-    data.push({label: label, value: stat});
+    data.push({'label': label, 'value': stat});
     unusedBw -= stat;
   });
-  data.push({label: 'free', value: unusedBw});
+  data.push({'label': 'free', 'value': unusedBw});
   return data;
 }
 
@@ -140,7 +140,7 @@ function createInput(name, type, defaultValue, placeholder) {
   input += ' id="' + name + '"';
   input += ' name="' + name + '"';
   input += ' type="' + type + '"';
-  input += ' value="' + (defaultValue === undefined ? '' : defaultValue) + '"';
+  input += ' value="' + (defaultValue ? defaultValue : '') + '"';
   input += ' placeholder = "' + placeholder + '"';
   input += ' />';
   span.innerHTML = input;
@@ -168,7 +168,7 @@ function saveSettings() {
     'host': host,
     'user': user,
     'pass': pass,
-    'maxBw': maxBw
+    'maxBw': maxBw,
   }, function() {
     refresh();
   });
@@ -184,7 +184,7 @@ function createSelect(name, defaultValue, placeholder) {
   if (!defaultValue) {
     input += ' selected="selected"';
   }
-  input += 'disabled="disabled">' + placeholder +  '</option>';
+  input += 'disabled="disabled">' + placeholder + '</option>';
 
   Object.keys(routers).forEach(function(routerName) {
     input += '<option value="' + routerName + '"';
@@ -200,7 +200,7 @@ function createSelect(name, defaultValue, placeholder) {
 }
 
 function createSettingsForm() {
-  var routerSelect = createSelect('router',  router, 'Router');
+  var routerSelect = createSelect('router', router, 'Router');
   var hostInput = createInput('host', 'text', host, 'Host');
   var userInput = createInput('user', 'text', user, 'User');
   var passInput = createInput('pass', 'password', pass, 'Password');
@@ -245,11 +245,11 @@ function setUp() {
   // TODO (mmr) : extract fields list
   // If settings is in storage, gets data, if not show settings form
   chrome.storage.sync.get(['router', 'host', 'user', 'pass', 'maxBw'], function (items) {
-    router = items['router'];
-    host = items['host'];
-    user = items['user'];
-    pass = items['pass'];
-    maxBw = items['maxBw'];
+    router = items.router;
+    host = items.host;
+    user = items.user;
+    pass = items.pass;
+    maxBw = items.maxBw;
 
     if (router && host && user && pass && maxBw) {
       refresh();

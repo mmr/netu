@@ -3,7 +3,6 @@
 /* global getStats */
 
 self.addEventListener('message', function (e) {
-
   function onSuccess(stats) {
     self.postMessage({
       'status': 'success',
