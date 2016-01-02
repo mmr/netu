@@ -1,3 +1,4 @@
+[![Build Status](https://api.travis-ci.org/mmr/netu.svg?branch=master)](https://travis-ci.org/mmr/netu/)
 # NetU
 Sharing wifi with 5 other people at home?
 
