@@ -50,7 +50,8 @@ function createButtons() {
 }
 
 function handleErr(err) {
-  var data = '<p>Something bad happened: ' + err + '<p/>';
+  var data = '<p>Something bad happened: <br />' + err + '<p/>';
+  data += 'Check your settings and try again';
   main.innerHTML = data;
 }
 

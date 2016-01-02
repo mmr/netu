@@ -55,6 +55,11 @@ function getStats(host, user, pass, successCb, failureCb) {
   }).catch(function(err) {
     failureCb(err);
   }).then(function(ipsBody) {
+    if (!ipsBody) {
+      return;
+    }
+
+    // Get ip:name map
     var names = parseIpList(ipsBody);
 
     // Fetch stats for each ip

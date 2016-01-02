@@ -26,7 +26,7 @@ function shouldFail(host, user) {
 
 function getStats(host, user, pass, successCb, failureCb) {
   if (shouldFail(host, user)) {
-    failureCb('Failure');
+    failureCb({message: 'Fizzles'});
     return;
   }
 

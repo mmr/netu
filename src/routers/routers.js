@@ -14,7 +14,7 @@ self.addEventListener('message', function (e) {
   function onFailure(err) {
     self.postMessage({
       'status': 'failure',
-      'err': err,
+      'err': err.message,
     });
   }
 
