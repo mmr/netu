@@ -1,3 +1,7 @@
+// Linting
+/* global importScripts */
+/* global getStats */
+
 self.addEventListener('message', function (e) {
 
   function onSuccess(stats) {
@@ -10,7 +14,7 @@ self.addEventListener('message', function (e) {
   function onFailure(err) {
     self.postMessage({
       'status': 'failure',
-      'err': err,
+      'err': err.message,
     });
   }
 

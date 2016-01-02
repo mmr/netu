@@ -3,22 +3,28 @@
   "version": "1.0.0",
   "description": "Net Usage",
   "main": "popup.js",
-  "dependencies": {
-    "d3": "^3.5.12",
-    "d3pie": "^0.1.9"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mmr/netu"
-  },
+  "author": "Marcio Ribeiro <binary@b1n.org> (http://b1n.org)",
+  "homepage": "https://github.com/mmr/netu",
+  "license": "ISC",
   "keywords": [
     "internet",
     "wifi"
   ],
-  "author": "Marcio Ribeiro",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmr/netu"
+  },
   "bugs": {
     "url": "https://github.com/mmr/netu/issues"
   },
-  "homepage": "https://github.com/mmr/netu"
+  "scripts": {
+    "test": "eslint src"
+  },
+  "dependencies": {
+    "d3": "^3.5.12",
+    "d3pie": "^0.1.9"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3"
+  }
 }

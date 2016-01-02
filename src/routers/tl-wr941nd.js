@@ -1,5 +1,4 @@
 /* TP-LINK WR941ND router stats fetcher script */
-
 var dataRe = /^<SCRIPT[^>]+>([^<]+)<\/SCRIPT>/;
 var ipsRe = /^"([^"]+)", "[^"]+", "([\d.]+)"/gm;
 var statsRe = /"([^"]+)",(?:[^,]+,){4} (\d+)/g;
@@ -22,7 +21,7 @@ function parseStats(body) {
   var m = null;
   while ((m = statsRe.exec(data)) !== null) {
     var ip = m[1];
-    var stat = parseInt(m[2]);
+    var stat = parseInt(m[2], 10);
     if (stat > 0) {
       stats[ip] = stat;
     }
@@ -34,16 +33,9 @@ function translateNames(stats, names) {
   var translated = {};
   Object.keys(stats).forEach(function(ip) {
     var name = names[ip];
-    var stat = parseInt(stats[ip]);
     translated[name] = stats[ip];
   });
   return translated;
-}
-
-function handleErr(err) {
-  var data = '<p>Something bad happened: ' + err + '<p/>';
-  main.innerHTML = data;
-  main.appendChild(createButtons());
 }
 
 function getStats(host, user, pass, successCb, failureCb) {
@@ -52,9 +44,9 @@ function getStats(host, user, pass, successCb, failureCb) {
   var namesUrl = baseUrl + 'AssignedIpAddrListRpm.htm';
   var statsUrl = baseUrl + 'SystemStatisticRpm.htm?Num_per_page=100';
   var conf = {
-    'headers': new Headers({
-      'Authorization': 'Basic ' + hash
-    })
+    headers: new Headers({
+      Authorization: 'Basic ' + hash,
+    }),
   };
 
   // Fetch ip:name map
@@ -63,13 +55,17 @@ function getStats(host, user, pass, successCb, failureCb) {
   }).catch(function(err) {
     failureCb(err);
   }).then(function(ipsBody) {
+    if (!ipsBody) {
+      return;
+    }
+
+    // Get ip:name map
     var names = parseIpList(ipsBody);
 
     // Fetch stats for each ip
     fetch(statsUrl, conf).then(function(resp) {
       return resp.text();
     }).then(function(statsBody) {
-
       // Translate ip to name and return to success callback
       var stats = translateNames(parseStats(statsBody), names);
       successCb(stats);
@@ -78,3 +74,6 @@ function getStats(host, user, pass, successCb, failureCb) {
     });
   });
 }
+
+// Linting
+/* exported getStats */
