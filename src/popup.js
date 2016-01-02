@@ -42,6 +42,101 @@ function createButton(name, action) {
   return button;
 }
 
+function clear() {
+  main.innerHTML = '';
+}
+
+function createInput(name, type, defaultValue, placeholder) {
+  var span = document.createElement('span');
+  var input = ' <input';
+  input += ' id="' + name + '"';
+  input += ' name="' + name + '"';
+  input += ' type="' + type + '"';
+  input += ' value="' + (defaultValue ? defaultValue : '') + '"';
+  input += ' placeholder = "' + placeholder + '"';
+  input += ' />';
+  span.innerHTML = input;
+  return span;
+}
+
+function createSelect(name, defaultValue, placeholder) {
+  var span = document.createElement('span');
+  var input = ' <select';
+  input += ' id="' + name + '"';
+  input += ' name="' + name + '"';
+  input += '>';
+  input += '<option value="" ';
+  if (!defaultValue) {
+    input += ' selected="selected"';
+  }
+  input += 'disabled="disabled">' + placeholder + '</option>';
+
+  Object.keys(routers).forEach(function(routerName) {
+    input += '<option value="' + routerName + '"';
+    if (routerName === defaultValue) {
+      input += ' selected="selected"';
+    }
+    input += '>' + routerName + '</option>';
+  });
+  input += '</select>';
+
+  span.innerHTML = input;
+  return span;
+}
+
+function getInputValue(name) {
+  return document.getElementById(name).value;
+}
+
+function getSelectValue(name) {
+  var sel = document.getElementById(name);
+  return sel.options[sel.selectedIndex].value;
+}
+
+function saveSettings() {
+  // TODO (mmr) : sanity check/validate user input
+  router = getSelectValue('router');
+  host = getInputValue('host');
+  user = getInputValue('user');
+  pass = getInputValue('pass');
+  maxBw = getInputValue('maxBw');
+  chrome.storage.sync.set({
+    'router': router,
+    'host': host,
+    'user': user,
+    'pass': pass,
+    'maxBw': maxBw,
+  }, function() {
+    refresh();
+  });
+}
+
+function createSettingsForm() {
+  var routerSelect = createSelect('router', router, 'Router');
+  var hostInput = createInput('host', 'text', host, 'Host');
+  var userInput = createInput('user', 'text', user, 'User');
+  var passInput = createInput('pass', 'password', pass, 'Password');
+  var maxBwInput = createInput('maxBw', 'text', maxBw, 'MaxBw in Mbit/s');
+  var saveButton = createButton('Save', saveSettings);
+
+  var fieldSet = document.createElement('fieldset');
+  var legend = document.createElement('legend');
+  legend.innerText = 'Settings';
+  fieldSet.appendChild(legend);
+  fieldSet.appendChild(routerSelect);
+  fieldSet.appendChild(hostInput);
+  fieldSet.appendChild(userInput);
+  fieldSet.appendChild(passInput);
+  fieldSet.appendChild(maxBwInput);
+  fieldSet.appendChild(saveButton);
+  return fieldSet;
+}
+
+function showSettingsForm() {
+  clear();
+  main.appendChild(createSettingsForm());
+}
+
 function createButtons() {
   var span = document.createElement('span');
   span.appendChild(createButton('Refresh', refresh));
@@ -53,10 +148,6 @@ function handleErr(err) {
   var data = '<p>Something bad happened: <br />' + err + '<p/>';
   data += 'Check your settings and try again';
   main.innerHTML = data;
-}
-
-function clear() {
-  main.innerHTML = '';
 }
 
 function drawPie(data) {
@@ -132,97 +223,6 @@ function getChartData(stats) {
   });
   data.push({'label': 'free', 'value': unusedBw});
   return data;
-}
-
-function createInput(name, type, defaultValue, placeholder) {
-  var span = document.createElement('span');
-  var input = ' <input';
-  input += ' id="' + name + '"';
-  input += ' name="' + name + '"';
-  input += ' type="' + type + '"';
-  input += ' value="' + (defaultValue ? defaultValue : '') + '"';
-  input += ' placeholder = "' + placeholder + '"';
-  input += ' />';
-  span.innerHTML = input;
-  return span;
-}
-
-function getInputValue(name) {
-  return document.getElementById(name).value;
-}
-
-function getSelectValue(name) {
-  var sel = document.getElementById(name);
-  return sel.options[sel.selectedIndex].value;
-}
-
-function saveSettings() {
-  // TODO (mmr) : sanity check/validate user input
-  router = getSelectValue('router');
-  host = getInputValue('host');
-  user = getInputValue('user');
-  pass = getInputValue('pass');
-  maxBw = getInputValue('maxBw');
-  chrome.storage.sync.set({
-    'router': router,
-    'host': host,
-    'user': user,
-    'pass': pass,
-    'maxBw': maxBw,
-  }, function() {
-    refresh();
-  });
-}
-
-function createSelect(name, defaultValue, placeholder) {
-  var span = document.createElement('span');
-  var input = ' <select';
-  input += ' id="' + name + '"';
-  input += ' name="' + name + '"';
-  input += '>';
-  input += '<option value="" ';
-  if (!defaultValue) {
-    input += ' selected="selected"';
-  }
-  input += 'disabled="disabled">' + placeholder + '</option>';
-
-  Object.keys(routers).forEach(function(routerName) {
-    input += '<option value="' + routerName + '"';
-    if (routerName === defaultValue) {
-      input += ' selected="selected"';
-    }
-    input += '>' + routerName + '</option>';
-  });
-  input += '</select>';
-
-  span.innerHTML = input;
-  return span;
-}
-
-function createSettingsForm() {
-  var routerSelect = createSelect('router', router, 'Router');
-  var hostInput = createInput('host', 'text', host, 'Host');
-  var userInput = createInput('user', 'text', user, 'User');
-  var passInput = createInput('pass', 'password', pass, 'Password');
-  var maxBwInput = createInput('maxBw', 'text', maxBw, 'MaxBw in Mbit/s');
-  var saveButton = createButton('Save', saveSettings);
-
-  var fieldSet = document.createElement('fieldset');
-  var legend = document.createElement('legend');
-  legend.innerText = 'Settings';
-  fieldSet.appendChild(legend);
-  fieldSet.appendChild(routerSelect);
-  fieldSet.appendChild(hostInput);
-  fieldSet.appendChild(userInput);
-  fieldSet.appendChild(passInput);
-  fieldSet.appendChild(maxBwInput);
-  fieldSet.appendChild(saveButton);
-  return fieldSet;
-}
-
-function showSettingsForm() {
-  clear();
-  main.appendChild(createSettingsForm());
 }
 
 function setUpRoutersWorker() {
