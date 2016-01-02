@@ -178,7 +178,11 @@ function createSelect(name, defaultValue, placeholder) {
   input += " id='" + name + "'";
   input += " name='" + name + "'";
   input += ">";
-  input += "<option value='' disabled>" + placeholder +  "</option>";
+  input += "<option value='' ";
+  if (!defaultValue) {
+    input += " selected='selected'";
+  }
+  input += "disabled='disabled'>" + placeholder +  "</option>";
 
   Object.keys(routers).forEach(function(routerName) {
     input += "<option value='" + routerName + "'";
