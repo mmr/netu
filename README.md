@@ -24,8 +24,8 @@ You have to configure the plugin before using.
 * This is using the `TEST` router. This is meant to test the plugin
 
 ## Chart
-After configuring the settings correctly, click the `Save` button and you will
-see a nice piechart depicting your local network Internet consumption.
+With the correct settings, click the `Save` button and you should
+get a nice piechart depicting your local network Internet consumption.
 
 ### Examples
 ![chart-example-1](site/chart-1.png)
