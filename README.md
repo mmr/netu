@@ -56,8 +56,7 @@ Now, to install the plugin in Chrome, do this:
 You are all set! :)
 
 Just click the neat icon that appeared on the right side of your address bar
-and configure the plugin.
-See the [Settings](#Settings) section
+and configure the plugin. See [Settings](#settings).
 
 ### Technologies used:
 - [NPM](https://www.npmjs.com/)
