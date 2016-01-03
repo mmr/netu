@@ -41,11 +41,10 @@ function translateNames(stats, names) {
 function getRespData(resp) {
   if (resp.status >= 200 && resp.status <= 299) {
     return resp.text();
-  } else {
-    var err = new Error(resp.statusText);
-    err.response = resp;
-    throw err;
   }
+  var err = new Error(resp.statusText);
+  err.response = resp;
+  throw err;
 }
 
 function getStats(host, user, pass, successCb, failureCb) {
