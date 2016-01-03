@@ -24,6 +24,10 @@ var maxBw = null;
 var main = null;
 var routersWorker = null;
 
+function clear() {
+  main.innerHTML = '';
+}
+
 function refresh() {
   var routerScript = routers[router];
   routersWorker.postMessage({
@@ -40,10 +44,6 @@ function createButton(name, action) {
   button.innerText = name;
   button.addEventListener('click', action);
   return button;
-}
-
-function clear() {
-  main.innerHTML = '';
 }
 
 function createInput(name, type, defaultValue, placeholder) {
@@ -93,7 +93,15 @@ function getSelectValue(name) {
   return sel.options[sel.selectedIndex].value;
 }
 
+function disableSaveButton() {
+  var saveButton = document.getElementById('Save');
+  saveButton.disabled = 'disabled';
+  saveButton.innerText = 'Loading...';
+}
+
 function saveSettings() {
+  disableSaveButton();
+
   // TODO (mmr) : sanity check/validate user input
   router = getSelectValue('router');
   host = getInputValue('host');
@@ -239,7 +247,12 @@ function setUpRoutersWorker() {
   }, false);
 }
 
+function showLoading() {
+  main.innerHTML = 'Loading...';
+}
+
 function setUp() {
+  showLoading();
   setUpRoutersWorker();
 
   // TODO (mmr) : extract fields list
