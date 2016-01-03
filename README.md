@@ -25,15 +25,15 @@ You have to configure the plugin before using.
 
 ## Chart
 With the correct settings, click the `Save` button and you should
-get a nice piechart depicting your local network Internet consumption.
+get a nice pie chart depicting your local network Internet usage.
 
 ### Examples
 ![chart-example-1](site/chart-1.png)
 ![chart-example-2](site/chart-2.png)
 
 ## Implementation details
-NetU is a very simple chrome plugin that talks directly to the wifi
-router to collect the download/upload statistics and shows it in a
+NetU is a very simple Chrome plugin that talks directly to the Wifi
+router to collect the download statistics and shows it in a
 nice pie chart.
 
 ## How to install
@@ -51,9 +51,13 @@ Now, to install the plugin in Chrome, do this:
 1. Go to `chrome://extensions`;
 1. Mark the `Developer mode` checkbox;
 1. Click on `Load unpacked extension`;
-1. Go to the `netu` directory you created;
+1. Go to the `netu` directory you've created;
 
 You are all set! :)
+
+Just click the neat icon that appeared on the right side of your address bar
+and configure the plugin.
+See the [Settings](#Settings) section
 
 ### Technologies used:
 - [NPM](https://www.npmjs.com/)
