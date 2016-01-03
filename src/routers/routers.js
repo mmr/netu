@@ -5,15 +5,15 @@
 self.addEventListener('message', function (e) {
   function onSuccess(stats) {
     self.postMessage({
-      'status': 'success',
-      'stats': stats,
+      status: 'success',
+      stats: stats,
     });
   }
 
   function onFailure(err) {
     self.postMessage({
-      'status': 'failure',
-      'err': err.message,
+      status: 'failure',
+      err: err.message,
     });
   }
 

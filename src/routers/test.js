@@ -30,7 +30,7 @@ function shouldFail(host, user) {
 
 function getStats(host, user, pass, successCb, failureCb) {
   if (shouldFail(host, user)) {
-    failureCb({'message': 'Fizzles'});
+    failureCb({message: 'Fizzles'});
     return;
   }
 

@@ -44,8 +44,8 @@ function getStats(host, user, pass, successCb, failureCb) {
   var namesUrl = baseUrl + 'AssignedIpAddrListRpm.htm';
   var statsUrl = baseUrl + 'SystemStatisticRpm.htm?Num_per_page=100';
   var conf = {
-    'headers': new Headers({
-      'Authorization': 'Basic ' + hash,
+    headers: new Headers({
+      Authorization: 'Basic ' + hash,
     }),
   };
 

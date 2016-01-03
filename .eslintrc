@@ -116,7 +116,7 @@
     "one-var": [2, "never"],
     "operator-assignment": [2, "always"],
     "padded-blocks": [2, "never"],
-    "quote-props": [2, "always"],
+    "quote-props": [2, "consistent-as-needed"],
     "quotes": [2, "single"],
     "radix": 2,
     "require-yield": 2,

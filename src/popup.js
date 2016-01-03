@@ -27,10 +27,10 @@ var routersWorker = null;
 function refresh() {
   var routerScript = routers[router];
   routersWorker.postMessage({
-    'routerScript': routerScript,
-    'host': host,
-    'user': user,
-    'pass': pass,
+    routerScript: routerScript,
+    host: host,
+    user: user,
+    pass: pass,
   });
 }
 
@@ -101,11 +101,11 @@ function saveSettings() {
   pass = getInputValue('pass');
   maxBw = getInputValue('maxBw');
   chrome.storage.sync.set({
-    'router': router,
-    'host': host,
-    'user': user,
-    'pass': pass,
-    'maxBw': maxBw,
+    router: router,
+    host: host,
+    user: user,
+    pass: pass,
+    maxBw: maxBw,
   }, function() {
     refresh();
   });
@@ -152,62 +152,62 @@ function handleErr(err) {
 
 function drawPie(data) {
   d3pie(mainId, {
-    'header': {
-      'title': {
-        'text': 'Net Usage',
-        'fontSize': 22,
-        'font': 'exo',
+    header: {
+      title: {
+        text: 'Net Usage',
+        fontSize: 22,
+        font: 'exo',
       },
     },
-    'size': {
-      'canvasHeight': 400,
-      'canvasWidth': 590,
-      'pieOuterRadius': '88%',
+    size: {
+      canvasHeight: 400,
+      canvasWidth: 590,
+      pieOuterRadius: '88%',
     },
-    'labels': {
-      'outer': {
-        'format': 'label',
-        'pieDistance': 32,
+    labels: {
+      outer: {
+        format: 'label',
+        pieDistance: 32,
       },
-      'mainLabel': {
-        'font': 'exo',
+      mainLabel: {
+        font: 'exo',
       },
-      'percentage': {
-        'color': '#e1e1e1',
-        'font': 'exo',
-        'decimalPlaces': 0,
+      percentage: {
+        color: '#e1e1e1',
+        font: 'exo',
+        decimalPlaces: 0,
       },
-      'value': {
-        'color': '#e1e1e1',
-        'font': 'exo',
+      value: {
+        color: '#e1e1e1',
+        font: 'exo',
       },
-      'lines': {
-        'enabled': true,
+      lines: {
+        enabled: true,
       },
-      'truncation': {
-        'enabled': true,
-      },
-    },
-    'effects': {
-      'pullOutSegmentOnClick': {
-        'effect': 'linear',
-        'speed': 400,
-        'size': 8,
+      truncation: {
+        enabled: true,
       },
     },
-    'misc': {
-      'gradient': {
-        'enabled': true,
-        'percentage': 100,
+    effects: {
+      pullOutSegmentOnClick: {
+        effect: 'linear',
+        speed: 400,
+        size: 8,
       },
     },
-    'data': {
-      'sortOrder': 'value-desc',
-      'smallSegmentGrouping': {
-        'enabled': true,
-        'value': minPercToShow,
+    misc: {
+      gradient: {
+        enabled: true,
+        percentage: 100,
       },
-      'content': data,
+    },
+    data: {
+      sortOrder: 'value-desc',
+      smallSegmentGrouping: {
+        enabled: true,
+        value: minPercToShow,
+      },
+      content: data,
     },
   });
 }
@@ -218,10 +218,10 @@ function getChartData(stats) {
   var data = [];
   Object.keys(stats).forEach(function(label) {
     var stat = stats[label];
-    data.push({'label': label, 'value': stat});
+    data.push({label: label, value: stat});
     unusedBw -= stat;
   });
-  data.push({'label': 'free', 'value': unusedBw});
+  data.push({label: 'free', value: unusedBw});
   return data;
 }
 
