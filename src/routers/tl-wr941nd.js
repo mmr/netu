@@ -38,6 +38,16 @@ function translateNames(stats, names) {
   return translated;
 }
 
+function getRespData(resp) {
+  if (resp.status >= 200 && resp.status <= 299) {
+    return resp.text();
+  } else {
+    var err = new Error(resp.statusText);
+    err.response = resp;
+    throw err;
+  }
+}
+
 function getStats(host, user, pass, successCb, failureCb) {
   var hash = btoa(user + ':' + pass);
   var baseUrl = 'http://' + host + '/userRpm/';
@@ -51,7 +61,7 @@ function getStats(host, user, pass, successCb, failureCb) {
 
   // Fetch ip:name map
   fetch(namesUrl, conf).then(function(resp) {
-    return resp.text();
+    return getRespData(resp);
   }).catch(function(err) {
     failureCb(err);
   }).then(function(ipsBody) {
@@ -64,8 +74,12 @@ function getStats(host, user, pass, successCb, failureCb) {
 
     // Fetch stats for each ip
     fetch(statsUrl, conf).then(function(resp) {
-      return resp.text();
+      return getRespData(resp);
     }).then(function(statsBody) {
+      if (!statsBody) {
+        return;
+      }
+
       // Translate ip to name and return to success callback
       var stats = translateNames(parseStats(statsBody), names);
       successCb(stats);
